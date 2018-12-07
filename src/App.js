@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 
-function ShowData(props,index) {
-  return <li className = "data-line"> {props.title} 
-          <button
-            className = "data-delete"> X </button> 
-        </li>
-}
-
 
 // 页面展示组件
 class App extends Component { 
@@ -19,14 +12,18 @@ class App extends Component {
       addData: []     // 数据输入模拟数组
     }
   }
-
+  // 获取输入框的值追加到数组中
   inputData(e) {
-    // console.log(e);
     if (e.keyCode === 13) {
       if (this.state.InputValue.trim().length !== 0) {
-        this.state.addData.push({
+        let addData = [...this.state.addData];
+        const adddData = addData.push({
           title: this.state.InputValue
         })
+        this.setState({
+          addData: adddData,
+        });
+       
         this.setState({
           InputValue: "",
         })
@@ -36,13 +33,11 @@ class App extends Component {
   // 清除一条数据按钮事件
   deleteHandler = (index) => {
     let addData = [...this.state.addData];
-
-    const xxx = addData.splice(index, 1)
-    // console.log(this.state.addData.splice(index, 1));
+    const deleteFirstData = addData.splice(index, 1)
 
 
     this.setState({
-      addData: xxx,
+      addData: deleteFirstData,
     });
 
     console.log(this.state.addData);
@@ -61,15 +56,22 @@ class App extends Component {
   }
   // 页面渲染
   render() {
-    const isLoggedIn = this.state.addData;
-     let button = null;
-     if (isLoggedIn !== '') {
-       button = <div className="content-data-show">
+    let ShowData = [...this.state.addData]; 
+      ShowData.map((item, index) => < li className = "data-line" >
+      {item.title}
+      <button
+        className = "data-delete" 
+        onClick={this.deleteHandler(index)}> X </button> 
+    </li>)
+
+     let showContent = null;
+     if (this.state.addData.length === 0) {
+       showContent = < div className = "content-data-show" >
               <span>暂无数据， 请添加数据 </span>
             </div>;
      } else {
-       button = <ul className="data-list-show">
-              {this.state.addData.map((item,index) => <ShowData {...item} key={index}></ShowData> )}
+       showContent = < ul className = "data-list-show" >
+              {ShowData}
             </ul>;
      }
     return <div className="box">
@@ -86,16 +88,7 @@ class App extends Component {
           onKeyDown={this.inputData.bind(this)}
         />
 
-          {button}
-          {/* {isLoggedIn ? (
-            <ul className="data-list-show">
-              {this.state.addData.map((item,index) => <ShowData {...item} key={index}></ShowData> )}
-            </ul>
-          ) : (
-            <div className="content-data-show">
-              <span>暂无数据， 请添加数据 </span>
-            </div>
-          )} */}
+          {showContent}
 
           <span className="delete-all" onClick={() => { this.deleteAll() }}> 清除 </span>
         </div>
