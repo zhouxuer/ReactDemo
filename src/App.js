@@ -3,76 +3,70 @@ import './App.css';
 
 
 // 页面展示组件
-class App extends Component { 
- 
+class App extends Component {
+
   constructor() {
     super()
     this.state = {
-      InputValue: "", //输入框输入值
-      addData: []     // 数据输入模拟数组
+      InputVal: "", //输入框输入值
+      dataArr: []     // 数据输入模拟数组
     }
   }
+    // 输入框的值发生改变时
+    inputChange(e) {
+        this.setState({
+            InputVal: e.target.value
+        })
+    }
   // 获取输入框的值追加到数组中
   inputData(e) {
     if (e.keyCode === 13) {
-      if (this.state.InputValue.trim().length !== 0) {
-        let addData = [...this.state.addData];
-        const adddData = addData.push({
-          title: this.state.InputValue
-        })
+      if (this.state.InputVal.trim().length !== 0) {
+          this.state.dataArr.push({
+            title: this.state.InputVal,
+            id: this.state.InputVal.index
+          });
         this.setState({
-          addData: adddData,
-        });
-       
-        this.setState({
-          InputValue: "",
+          InputVal: "",
         })
       }
     }
   }
   // 清除一条数据按钮事件
-  deleteHandler = (index) => {
-    let addData = [...this.state.addData];
-    const deleteFirstData = addData.splice(index, 1)
-
-
+  deleteFirstData = (e) => {
+      console.log(e);
+    let dataArr = [...this.state.dataArr];
+      dataArr = dataArr.indexOf(e)
+    const deleteFirstData = dataArr.splice(dataArr, 1);
     this.setState({
-      addData: deleteFirstData,
+        dataArr: deleteFirstData,
     });
-
-    console.log(this.state.addData);
-  }
+  };
   // 清除全部按钮点击事件
-  deleteAll = () => {
+  deleteAll (e) {
     this.setState({
-      addData: [],
+        dataArr: [],
     })
-  }
-  // 输入框的值发生改变时
-  inputChange(e) {
-    this.setState({
-      InputValue: e.target.value
-    })
-  }
+  };
   // 页面渲染
   render() {
-    let ShowData = [...this.state.addData]; 
-      ShowData.map((item, index) => < li className = "data-line" >
-      {item.title}
-      <button
-        className = "data-delete" 
-        onClick={this.deleteHandler(index)}> X </button> 
-    </li>)
-
-     let showContent = null;
-     if (this.state.addData.length === 0) {
-       showContent = < div className = "content-data-show" >
+      const showData = this.state.dataArr.map((item, index) =>
+          < li className="data-line" key={index}>
+              {item.title}
+              <button
+                  className="data-delete"
+                  onClick={this.deleteFirstData.bind(item)}> X
+              </button>
+          </li>);
+     let dataContent = null;
+     if (this.state.dataArr.length === 0) {
+         dataContent = < div className = "content-data-show" >
               <span>暂无数据， 请添加数据 </span>
             </div>;
      } else {
-       showContent = < ul className = "data-list-show" >
-              {ShowData}
-            </ul>;
+         dataContent = < ul className = "data-list-show" >
+           {showData}
+       </ul>;
      }
     return <div className="box">
         <div className="nav">
@@ -80,21 +74,19 @@ class App extends Component {
         </div>
 
         <div className="demo-content">
-        <input type="text" 
-          className="content-data" 
-          placeholder="请输入数据" 
+        <input type="text"
+          className="content-data"
+          placeholder="请输入数据"
           onChange={this.inputChange.bind(this)}
-          value={this.state.InputValue}
+          value={this.state.InputVal}
           onKeyDown={this.inputData.bind(this)}
         />
-
-          {showContent}
-
+          {dataContent}
           <span className="delete-all" onClick={() => { this.deleteAll() }}> 清除 </span>
         </div>
       </div>;
   }
-  
+
 }
 
 export default App;
